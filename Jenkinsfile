@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/mishikabatra5/self_hosted2.git'
+                git branch: 'main', url: 'https://github.com/mishikabatra5/self_hosted2.git'
             }
         }
         stage('Build') {
