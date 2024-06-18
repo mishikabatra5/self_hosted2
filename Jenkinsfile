@@ -2,25 +2,26 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'your-docker-credentials-id'
-        DOCKER_IMAGE = 'your-dockerhub-username/nginx-docker'
+        DOCKER_IMAGE = 'self_hosted2/nginx-docker'
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/mishikabatra5/self_hosted2.git'
+            }
+        }
         stage('Build') {
             steps {
                 script {
-                    def dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_NUMBER}")
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_NUMBER}")
                 }
             }
         }
-        stage('Push') {
+        stage('Deploy') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        dockerImage.push("${env.BUILD_NUMBER}")
-                        dockerImage.push('latest')
-                    }
+                    docker.run("${DOCKER_IMAGE}:${env.BUILD_NUMBER}", "-d -p 80:80")
                 }
             }
         }
@@ -35,7 +36,7 @@ pipeline {
                     <p>Check the details at: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                 """,
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                to: 'your-email@example.com'
+                to: 'mishikabatra5@gmail.com'
             )
         }
         failure {
