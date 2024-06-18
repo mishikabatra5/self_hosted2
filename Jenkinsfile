@@ -21,7 +21,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    docker.run("${DOCKER_IMAGE}:${env.BUILD_NUMBER}", "-d -p 80:80")
+                    dockerImage.run("-d -p 80:80")
                 }
             }
         }
