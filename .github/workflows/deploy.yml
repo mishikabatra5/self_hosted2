@@ -1,27 +1,26 @@
-name: Deploy Pipeline
+# deploy.yml
+name: Deployment Pipeline
 
 on:
-  workflow_run:
-    workflows: ["Build Pipeline"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: Download Docker Image
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image
-      
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username mishikabatra --password-stdin
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Push Docker Image
-        run: docker push mishikabatra/pipeline:latest
+      - name: Pull Docker image
+        run: docker pull pipeline:latest
 
-      - name: Run Docker Container
-        run: docker run -d -p 80:80 mishikabatra/pipeline:latest
+      - name: Stop previous nginx container (if exists)
+        run: docker stop nginx-container || true
+
+      - name: Remove previous nginx container (if exists)
+        run: docker rm nginx-container || true
+
+      - name: Run new nginx container
+        run: docker run -d -p 80:80 --name nginx-container pipeline:latest
