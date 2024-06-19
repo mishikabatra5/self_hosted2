@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/mishikabatra5/self_hosted2.git'  // Replace with your GitHub repository URL
+                git branch: 'main', url: 'https://github.com/mishikabatra5/self_hosted2.git'  // Ensure the correct branch is specified
             }
         }
 
@@ -34,9 +34,23 @@ pipeline {
     post {
         success {
             echo 'Build succeeded!'
+            emailext (
+                subject: "Jenkins Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' Succeeded",
+                body: """<p>Good news! Jenkins Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' Succeeded.</p>
+                         <p>Check the details at: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
+                recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: 'mishikabatra5@gmail.com'
+            )
         }
         failure {
             echo 'Build failed :('
+            emailext (
+                subject: "Jenkins Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' Failed",
+                body: """<p>Bad news! Jenkins Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' Failed.</p>
+                         <p>Check the details at: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>""",
+                recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: 'mishikabatra5@gmail.com'
+            )
         }
     }
 }
