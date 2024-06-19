@@ -17,20 +17,17 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      
+
       - name: Install Dependencies
         run: npm install
 
-      - name: Run Build
+      - name: Build
         run: npm run build
 
-      - name: Build Docker Image
-        run: docker build -t mishikabatra/pipeline:latest .
-
-      - name: Save Docker Image
+      - name: Archive Build Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: docker-image
-          path: |
-            Dockerfile
-            build/
+          name: build-artifacts
+          path: build/
+
+  # Additional steps can be added for testing, linting, etc. as needed
