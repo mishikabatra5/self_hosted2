@@ -1,14 +1,8 @@
-# Use NGINX base image
-FROM nginx:alpine
+# Dockerfile for nginx server
+FROM nginx:latest
 
-# Copy build artifacts to NGINX html directory
-COPY ./build /usr/share/nginx/html
-
-# Copy nginx configuration file if needed
-# COPY nginx.conf /etc/nginx/nginx.conf
+# Copy your static files into the nginx html directory
+COPY ./path/to/your/static/files /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
-
-# Command to start NGINX
-CMD ["nginx", "-g", "daemon off;"]
