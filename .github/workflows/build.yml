@@ -1,3 +1,4 @@
+# build.yml
 name: Build Pipeline
 
 on:
@@ -8,26 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
-      - name: Archive Build Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-artifacts
-          path: build/
-
-  # Additional steps can be added for testing, linting, etc. as needed
+      - name: Build Docker image
+        run: docker build -t pipeline:latest .
